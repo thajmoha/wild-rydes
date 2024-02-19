@@ -1,8 +1,8 @@
 {
-  "name": "infra",
+  "name": "wild-rydes",
   "version": "0.1.0",
   "bin": {
-    "infra": "bin/infra.js"
+    "infra": "bin/wild-rydes.js"
   },
   "scripts": {
     "build": "tsc",
