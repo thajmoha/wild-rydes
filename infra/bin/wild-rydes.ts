@@ -27,7 +27,7 @@ if (!rootDomainName) {
 }
 
 const app = new cdk.App();
-new WildRydesStack(app, "InfraStack", {
+new WildRydesStack(app, "WildRydesStack", {
   env,
   rootDomainName,
 });
