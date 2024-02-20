@@ -4,12 +4,12 @@ import * as s3 from "aws-cdk-lib/aws-s3";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 
-interface WildRydesStackProps extends cdk.StackProps {
+interface WebsiteS3Props extends cdk.StackProps {
   rootDomainName: string;
 }
 
-export class WildRydesStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: WildRydesStackProps) {
+export class WebsiteS3Stack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: WebsiteS3Props) {
     super(scope, id, props);
 
     const logsBuckt = new s3.Bucket(this, "logs", {

@@ -2,7 +2,7 @@
 import * as dotenv from "dotenv";
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
-import { WildRydesStack } from "../lib/wild-rydes-stack";
+import { WebsiteS3Stack } from "../lib/website-s3-stack";
 
 dotenv.config();
 
@@ -27,7 +27,7 @@ if (!rootDomainName) {
 }
 
 const app = new cdk.App();
-new WildRydesStack(app, "WildRydesStack", {
+new WebsiteS3Stack(app, "WebsiteS3Stack", {
   env,
   rootDomainName,
 });
