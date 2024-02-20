@@ -4,6 +4,7 @@
 node_modules
 package-lock.json
 .env
+.DS_store
 
 # CDK asset staging directory
 .cdk.staging
