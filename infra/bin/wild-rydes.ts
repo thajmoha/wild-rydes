@@ -2,7 +2,8 @@
 import * as dotenv from "dotenv";
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
-import { WebsiteS3Stack } from "../lib/website-s3-stack";
+import { StaticWebsiteStack } from "../lib/static-website-stack";
+import { UserManagementStack } from "../lib/user-management-stack";
 
 dotenv.config();
 
@@ -21,13 +22,33 @@ const env = {
   region: awsRegion,
 };
 
-const rootDomainName = process.env.rootDomainName as string;
+const rootDomainName = process.env.ROOT_DOMAIN_NAME as string;
 if (!rootDomainName) {
-  throw new Error("rootDomainName is required");
+  throw new Error("ROOT_DOMAIN_NAME is required");
 }
 
+const appName = process.env.APP_NAME as string;
+if (!appName) {
+  throw new Error("APP_NAME is required");
+}
+const userPoolId = process.env.USER_POOL_ID as string;
+const userPoolClientId = process.env.USER_POOL__CLIENT_ID as string;
+
 const app = new cdk.App();
-new WebsiteS3Stack(app, "WebsiteS3Stack", {
+
+// user management stack
+const userManagementStack = new UserManagementStack(
+  app,
+  `${appName}UserManagementStack`,
+  {
+    env,
+    appName,
+  }
+);
+
+// static website
+
+new StaticWebsiteStack(app, `${appName}StaticWebsiteStack`, {
   env,
   rootDomainName,
 });

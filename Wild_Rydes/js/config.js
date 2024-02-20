@@ -1,10 +1,10 @@
 window._config = {
-  "cognito": {
-    "userPoolId": "${Token[TOKEN.21]}",
-    "userPoolClientId": "${Token[TOKEN.27]}",
-    "region": "us-west-1"
+  cognito: {
+    userPoolId: "us-west-1_Ysohpe7b1",
+    userPoolClientId: "3ib1lsri6u9jh6hp1850q6tmal",
+    region: "us-west-1",
   },
-  "api": {
-    "invokeUrl": "https://te68s8jurh.execute-api.us-west-1.amazonaws.com/prod"
-  }
+  api: {
+    invokeUrl: "https://te68s8jurh.execute-api.us-west-1.amazonaws.com/prod",
+  },
 };

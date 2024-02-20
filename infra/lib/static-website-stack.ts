@@ -4,15 +4,15 @@ import * as s3 from "aws-cdk-lib/aws-s3";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 
-interface WebsiteS3Props extends cdk.StackProps {
+interface StaticWebsiteProps extends cdk.StackProps {
   rootDomainName: string;
 }
 
-export class WebsiteS3Stack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: WebsiteS3Props) {
+export class StaticWebsiteStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: StaticWebsiteProps) {
     super(scope, id, props);
 
-    const logsBuckt = new s3.Bucket(this, "logs", {
+    const logsBucket = new s3.Bucket(this, "logs", {
       bucketName: `logs.${props.rootDomainName}`,
       autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -27,7 +27,7 @@ export class WebsiteS3Stack extends cdk.Stack {
       metrics: websiteBucketMetrics,
       websiteErrorDocument: "error.html",
       websiteIndexDocument: "index.html",
-      serverAccessLogsBucket: logsBuckt,
+      serverAccessLogsBucket: logsBucket,
       autoDeleteObjects: true,
       blockPublicAccess: {
         blockPublicAcls: false,
