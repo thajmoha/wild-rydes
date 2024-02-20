@@ -18,9 +18,13 @@ export class WebsiteS3Stack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    // define bucket metrics
+    const websiteBucketMetrics: s3.BucketMetrics[] = [{ id: "UsageFilter" }];
+
     const websiteBucket = new s3.Bucket(this, "website", {
       bucketName: props.rootDomainName,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      metrics: websiteBucketMetrics,
       websiteErrorDocument: "error.html",
       websiteIndexDocument: "index.html",
       serverAccessLogsBucket: logsBuckt,
