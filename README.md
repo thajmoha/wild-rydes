@@ -12,5 +12,4 @@ The application architecture uses AWS Lambda, Amazon API Gateway, Amazon DynamoD
 | WildRydesStaticWebsiteStack  | S3           | WildRydesUserManagementStack |
 
 - deploy **WildRydesUserManagementStcak** `cdk deploy 'WildRydesUserManagementStack' --profile=foothill`
-- get userPoolId and userPoolClientId and modify Wild_Rydes/js/config.js
 - deploy **WildRydesStaticWebsiteStcak** a specific stack `cdk deploy 'WildRydesStaticWebsiteStack' --profile=foothill`
