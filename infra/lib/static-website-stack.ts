@@ -9,6 +9,7 @@ import * as eventsources from "aws-cdk-lib/aws-lambda-event-sources";
 
 interface StaticWebsiteProps extends cdk.StackProps {
   rootDomainName: string;
+  appName: string;
 }
 
 export class StaticWebsiteStack extends cdk.Stack {
@@ -60,6 +61,9 @@ export class StaticWebsiteStack extends cdk.Stack {
         path.join(__dirname, "lambda-config-update-handler")
       ),
       handler: "main.lambda_handler",
+      environment: {
+        appName: props.appName,
+      },
     });
 
     // Custom IAM policy
@@ -79,7 +83,7 @@ export class StaticWebsiteStack extends cdk.Stack {
     myLambda.addEventSource(
       new eventsources.S3EventSource(websiteBucket, {
         events: [s3.EventType.OBJECT_CREATED],
-        filters: [{ prefix: "js/" }],
+        filters: [{ prefix: "js/config.js" }],
       })
     );
   }

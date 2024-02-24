@@ -37,18 +37,16 @@ const userPoolClientId = process.env.USER_POOL__CLIENT_ID as string;
 const app = new cdk.App();
 
 // user management stack
-const userManagementStack = new UserManagementStack(
-  app,
-  `${appName}UserManagementStack`,
-  {
-    env,
-    appName,
-  }
-);
+
+new UserManagementStack(app, `${appName}UserManagementStack`, {
+  env,
+  appName,
+});
 
 // static website
 
 new StaticWebsiteStack(app, `${appName}StaticWebsiteStack`, {
   env,
   rootDomainName,
+  appName,
 });
