@@ -17,7 +17,7 @@ export class UserManagementStack extends cdk.Stack {
     const userPoolName = `${props.appName}UserPool`;
     const pool = new cognito.UserPool(this, `${props.appName}Pool`, {
       userPoolName: userPoolName,
-      deletionProtection: true,
+      // deletionProtection: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       // [sign up]
       // Users can either be signed up by the app's administrators or can sign themselves up
@@ -63,8 +63,18 @@ export class UserManagementStack extends cdk.Stack {
       },
       mfa: cognito.Mfa.OFF,
     });
-    pool.addClient(`${userPoolName}-app-client`, {
+    const client = pool.addClient(`${userPoolName}-app-client`, {
       userPoolClientName: `${props.appName}WebApp`,
+    });
+    // Export User Pool ID
+    new cdk.CfnOutput(this, "UserPoolId", {
+      value: pool.userPoolId,
+      exportName: "UserPoolId",
+    });
+
+    new cdk.CfnOutput(this, "UserPoolClientId", {
+      value: client.userPoolClientId,
+      exportName: "UserPoolClientId",
     });
   }
 }

@@ -4,6 +4,7 @@ import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
 import { StaticWebsiteStack } from "../lib/static-website-stack";
 import { UserManagementStack } from "../lib/user-management-stack";
+import { BackendStack } from "../lib/backend-stack";
 
 dotenv.config();
 
@@ -31,22 +32,34 @@ const appName = process.env.APP_NAME as string;
 if (!appName) {
   throw new Error("APP_NAME is required");
 }
-const userPoolId = process.env.USER_POOL_ID as string;
-const userPoolClientId = process.env.USER_POOL__CLIENT_ID as string;
 
 const app = new cdk.App();
 
 // user management stack
 
-new UserManagementStack(app, `${appName}UserManagementStack`, {
+const userManegementStakc = new UserManagementStack(
+  app,
+  `${appName}UserManagementStack`,
+  {
+    env,
+    appName,
+  }
+);
+
+// backend
+const backendStack = new BackendStack(app, `${appName}BackendStack`, {
   env,
   appName,
 });
-
+backendStack.addDependency(userManegementStakc);
 // static website
-
-new StaticWebsiteStack(app, `${appName}StaticWebsiteStack`, {
-  env,
-  rootDomainName,
-  appName,
-});
+const staticwebsiteStack = new StaticWebsiteStack(
+  app,
+  `${appName}StaticWebsiteStack`,
+  {
+    env,
+    rootDomainName,
+    appName,
+  }
+);
+staticwebsiteStack.addDependency(backendStack);

@@ -53,6 +53,11 @@ export class StaticWebsiteStack extends cdk.Stack {
       sources: [s3deploy.Source.asset("../Wild_Rydes")],
       destinationBucket: websiteBucket,
     });
+    console.log("----------------------");
+    const userPoolId = cdk.Fn.importValue("UserPoolId");
+    const userPoolClientId = cdk.Fn.importValue("UserPoolClientId");
+    const apiInvokeUrl = cdk.Fn.importValue("prodApiUrl");
+    console.log("----------------------");
 
     const myLambda = new lambda.Function(this, "lambda-config-updates", {
       functionName: "WildRydesConfigUpdatedFunction",
@@ -63,6 +68,9 @@ export class StaticWebsiteStack extends cdk.Stack {
       handler: "main.lambda_handler",
       environment: {
         appName: props.appName,
+        userPoolId: userPoolId,
+        userPoolClientId: userPoolClientId,
+        invokeUrl: apiInvokeUrl,
       },
     });
 
@@ -83,7 +91,7 @@ export class StaticWebsiteStack extends cdk.Stack {
     myLambda.addEventSource(
       new eventsources.S3EventSource(websiteBucket, {
         events: [s3.EventType.OBJECT_CREATED],
-        filters: [{ prefix: "js/config.js" }],
+        filters: [{ prefix: "js/config_template.js" }],
       })
     );
   }

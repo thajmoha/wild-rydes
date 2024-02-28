@@ -1,5 +1,4 @@
 import boto3
-import json
 import re
 import os
 
@@ -9,17 +8,16 @@ s3_client = boto3.client('s3')
 def lambda_handler(event, context):
     # Check if the event is an S3 event
     print("==========STARTING===========")
-    app_name = os.environ.get("appName")
-    user_pool_name = f"{app_name}UserPool"
-    user_pool_client_name = f"{app_name}WebApp"
-    user_pool_id = get_user_pool_id_by_name(user_pool_name)
-    user_pool_client_id = get_user_pool_client_id(
-        user_pool_id, user_pool_client_name
-    )
+    user_pool_id = os.environ.get("userPoolId")
+    user_pool_client_id = os.environ.get("userPoolClientId")
+    y = os.environ.get("invokeUrl")
+    print(f"passed userpoolid [{user_pool_id},{user_pool_client_id}]")
+
     vlauseToModify = {
         "userPoolId": user_pool_id,
         "userPoolClientId": user_pool_client_id,
-        "region": event['Records'][0]["awsRegion"]}
+        "region": event['Records'][0]["awsRegion"],
+        "invokeUrl": y}
 
     # Get bucket name and object key from the event
     bucket_name = event['Records'][0]['s3']['bucket']['name']
@@ -27,7 +25,7 @@ def lambda_handler(event, context):
     print(bucket_name, object_key)
     
     # Check if the object added is the desired config.js file
-    if object_key == 'js/config.js':
+    if object_key == 'js/config_template.js':
         print("config.js was added")
         config_content = get_file_content(bucket_name, object_key)
 
@@ -38,7 +36,7 @@ def lambda_handler(event, context):
                 config_content
             )
         print(config_content)
-        put_file_content(bucket_name, object_key, config_content)
+        put_file_content(bucket_name, 'js/config.js', config_content)
     print("==========ENDING===========")
 
 
