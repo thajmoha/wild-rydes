@@ -6,10 +6,12 @@ The application architecture uses AWS Lambda, Amazon API Gateway, Amazon DynamoD
 
 ## Deployment
 
-| Stack                        | AWS services | Stack Dependencies           |
-| ---------------------------- | ------------ | ---------------------------- |
-| WildRydesUserManagementStack | Cognito      | NA                           |
-| WildRydesStaticWebsiteStack  | S3           | WildRydesUserManagementStack |
+| Stack                        | AWS services        | Stack Dependencies           |
+| ---------------------------- | ------------------- | ---------------------------- |
+| WildRydesUserManagementStack | Cognito             | NA                           |
+| WildBackendStack             | API Gateway/ Lambda | WildRydesUserManagementStack |
+| WildRydesStaticWebsiteStack  | S3/ Lambda          | WildBackendStack             |
 
-- deploy **WildRydesUserManagementStcak** `cdk deploy 'WildRydesUserManagementStack' --profile=foothill`
-- deploy **WildRydesStaticWebsiteStcak** a specific stack `cdk deploy 'WildRydesStaticWebsiteStack' --profile=foothill`
+- deploy all stacks `cdk deploy --all --profile=foothill`
+- destroy all stacks `cdk destroy --all --profile=foothill`
+- deploy <specific-stack> a specific stack `cdk deploy '<specific-stack>' --profile=foothill`
