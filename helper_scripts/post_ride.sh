@@ -1,0 +1,13 @@
+access_token="eyJraWQiOiJBQlp2MXNrY2drSXVSR2hJUWZkbjZ5d0J3S25Da1wveWhKOGw1UlhFOHFcL3c9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI3ZmVhODA3NS0zNjcyLTRjZmUtOTFkOS1hMmUzNTBjYmZkZjQiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLXdlc3QtMS5hbWF6b25hd3MuY29tXC91cy13ZXN0LTFfWXNvaHBlN2IxIiwiY29nbml0bzp1c2VybmFtZSI6Imhham1vaGFtYWR0dXJraUBzdHVkZW50LmZvb3RoaWxsLmVkdSIsIm9yaWdpbl9qdGkiOiJjNjUzZGNiZC00ZWE5LTQ1ZGEtODc5Ni00NWVjN2NiNDJmZDUiLCJhdWQiOiIzaWIxbHNyaTZ1OWpoNmhwMTg1MHE2dG1hbCIsImV2ZW50X2lkIjoiODQ4NmIzYmEtOGY2Ny00NTM5LTk5NDYtMTUxMzYxYjUxODEwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3MDkwMTUxOTcsImV4cCI6MTcwOTAxODc5NywiaWF0IjoxNzA5MDE1MTk3LCJqdGkiOiJlZDI0OTExOS1mNzI4LTQzZDUtYmMyNy1hZGNmMGNiMTNjNTYiLCJlbWFpbCI6Imhham1vaGFtYWR0dXJraUBzdHVkZW50LmZvb3RoaWxsLmVkdSJ9.OcYqHAS6-IXhaWDOpYO63x8G0taWY9CBBPYT1Pxk7MixY5PRgtAcxQNnr8GKE0QYfv15-XiVQnSsVWS6LB5A8tFzY_EBGU6s9oTBslG-BFzik5j3kGavcUY17SQIG7aw6nDBvOnBDaVcUOGpf4iuvNOSDMWlb4p53NkvmByimgOBbKFIeizVvrhz0PZNhVey393NXn-8QMVK5L32mr2cCqErf6lNRXmV3hsksShAQrePuCRelMNZF4fzSnAlaAJPBjhfoa9MwzhKZI7fXYTqYudqZbpMxt_1rH0vnSc7djbVAtMgKOuv8Oc5-xGZv3xKztJrJQACezzWB8C1CGs6og"
+endpoint_url=https://gwxln1p5dj.execute-api.us-west-1.amazonaws.com/prod/ride
+
+curl -X POST \
+  -H "Authorization: $access_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "PickupLocation": {
+            "Latitude": "pickupLocation.latitude",
+            "Longitude": "pickupLocation.longitude"
+        }
+    }' \
+  $endpoint_url
