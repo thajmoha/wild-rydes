@@ -20,3 +20,15 @@ The application architecture uses AWS Lambda, Amazon API Gateway, Amazon DynamoD
 
 - to run test `npm test`
 - to regenerate a cdk template `npm test -- -u`
+
+## Generate aws diagram using cdk-dia
+
+- https://github.com/pistazie/cdk-dia
+- make sure graphviz is installed `dot -V` if not `brew install graphviz`
+- `npm install cdk-dia`
+
+- to generate the diagram:
+  - `cdk synth`
+  - `npx cdk-dia`
+
+![Alt text](infra/diagram.png)

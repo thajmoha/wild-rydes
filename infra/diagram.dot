@@ -78,8 +78,8 @@ digraph "Diagram" {
           style = "filled,rounded",
           fillcolor = "#e4e4e4",
         ];
-        "WildRydesBackendStack/Table" [
-          label = " Table",
+        "WildRydesBackendStack/WildRydesRidesTable" [
+          label = " WildRydesRidesTable",
           fontsize = 12,
           image = "/Users/tmohamad/Library/CloudStorage/OneDrive-SRIInternational/Documents/courses/Foothill-2024/AWS/project/wild-rydes/infra/node_modules/cdk-dia/icons/aws/Service/Arch_Database/64/Arch_Amazon-DynamoDB_64@5x.png",
           imagescale = "true",
@@ -91,8 +91,8 @@ digraph "Diagram" {
           width = 1.2,
           height = 1.466,
         ];
-        "WildRydesBackendStack/lambda" [
-          label = " lambda",
+        "WildRydesBackendStack/WildRydesRequestUnicorn" [
+          label = "\nWildRydesRequestUnico",
           fontsize = 12,
           image = "/Users/tmohamad/Library/CloudStorage/OneDrive-SRIInternational/Documents/courses/Foothill-2024/AWS/project/wild-rydes/infra/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
           imagescale = "true",
@@ -102,10 +102,10 @@ digraph "Diagram" {
           fixedsize = "true",
           labelloc = "b",
           width = 2,
-          height = 2.266,
+          height = 2.4819999999999998,
         ];
-        "WildRydesBackendStack/WildRydes-api" [
-          label = " WildRydes-api",
+        "WildRydesBackendStack/WildRydesApi" [
+          label = " WildRydesApi",
           fontsize = 12,
           image = "/Users/tmohamad/Library/CloudStorage/OneDrive-SRIInternational/Documents/courses/Foothill-2024/AWS/project/wild-rydes/infra/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-API-Gateway_64@5x.png",
           imagescale = "true",
@@ -117,8 +117,8 @@ digraph "Diagram" {
           width = 1.2,
           height = 1.466,
         ];
-        "WildRydesBackendStack/auth" [
-          label = " auth",
+        "WildRydesBackendStack/WildRydesApiAuth" [
+          label = " WildRydesApiAuth",
           fontsize = 12,
           image = "/Users/tmohamad/Library/CloudStorage/OneDrive-SRIInternational/Documents/courses/Foothill-2024/AWS/project/wild-rydes/infra/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-API-Gateway_64@5x.png",
           imagescale = "true",
@@ -143,8 +143,8 @@ digraph "Diagram" {
           style = "filled,rounded",
           fillcolor = "#e4e4e4",
         ];
-        "WildRydesStaticWebsiteStack/logs" [
-          label = " logs",
+        "WildRydesStaticWebsiteStack/logs.wildrydes-turki-hajmohamad" [
+          label = " logs.wildrydes turki\nhajmohamad",
           fontsize = 12,
           image = "/Users/tmohamad/Library/CloudStorage/OneDrive-SRIInternational/Documents/courses/Foothill-2024/AWS/project/wild-rydes/infra/node_modules/cdk-dia/icons/aws/Service/Arch_Storage/64/Arch_Amazon-S3-Standard_64@5x.png",
           imagescale = "true",
@@ -154,10 +154,10 @@ digraph "Diagram" {
           fixedsize = "true",
           labelloc = "b",
           width = 2,
-          height = 2.266,
+          height = 2.4819999999999998,
         ];
-        "WildRydesStaticWebsiteStack/website" [
-          label = " website",
+        "WildRydesStaticWebsiteStack/wildrydes-turki-hajmohamad" [
+          label = " wildrydes turki\nhajmohamad",
           fontsize = 12,
           image = "/Users/tmohamad/Library/CloudStorage/OneDrive-SRIInternational/Documents/courses/Foothill-2024/AWS/project/wild-rydes/infra/node_modules/cdk-dia/icons/aws/Service/Arch_Storage/64/Arch_Amazon-S3-Standard_64@5x.png",
           imagescale = "true",
@@ -167,7 +167,7 @@ digraph "Diagram" {
           fixedsize = "true",
           labelloc = "b",
           width = 2,
-          height = 2.266,
+          height = 2.4819999999999998,
         ];
         "WildRydesStaticWebsiteStack/Custom__CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C" [
           label = " Custom \nCDKBucketDeployment86",
@@ -182,8 +182,8 @@ digraph "Diagram" {
           width = 2,
           height = 2.4819999999999998,
         ];
-        "WildRydesStaticWebsiteStack/lambda-config-updates" [
-          label = "\nlambda-config-updates",
+        "WildRydesStaticWebsiteStack/WildRydesUpdateJsConfig" [
+          label = "\nWildRydesUpdateJsConf",
           fontsize = 12,
           image = "/Users/tmohamad/Library/CloudStorage/OneDrive-SRIInternational/Documents/courses/Foothill-2024/AWS/project/wild-rydes/infra/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
           imagescale = "true",
@@ -208,9 +208,9 @@ digraph "Diagram" {
           width = 1.2,
           height = 1.466,
         ];
-        subgraph "cluster-SubGraph.DeployWebsite" {
+        subgraph "cluster-SubGraph.WildRydesDeployWebsite" {
           graph [
-            label = "DeployWebsite",
+            label = "WildRydesDeployWebsite",
             labelloc = "b",
             labeljust = "l",
             margin = "10",
@@ -220,7 +220,7 @@ digraph "Diagram" {
             style = "filled,rounded",
             fillcolor = "#d6d6d6",
           ];
-          "WildRydesStaticWebsiteStack/DeployWebsite/AwsCliLayer" [
+          "WildRydesStaticWebsiteStack/WildRydesDeployWebsite/AwsCliLayer" [
             label = " AwsCliLayer",
             fontsize = 12,
             image = "/Users/tmohamad/Library/CloudStorage/OneDrive-SRIInternational/Documents/courses/Foothill-2024/AWS/project/wild-rydes/infra/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
@@ -233,7 +233,7 @@ digraph "Diagram" {
             width = 2,
             height = 2.266,
           ];
-          "WildRydesStaticWebsiteStack/DeployWebsite/CustomResource" [
+          "WildRydesStaticWebsiteStack/WildRydesDeployWebsite/CustomResource" [
             label = " CloudFormation\nCustomResource\nCustomResource",
             fontsize = 12,
             image = "/Users/tmohamad/Library/CloudStorage/OneDrive-SRIInternational/Documents/courses/Foothill-2024/AWS/project/wild-rydes/infra/node_modules/cdk-dia/icons/aws/Service/Arch_Management-Governance/64/Arch_AWS-CloudFormation_64@5x.png",
@@ -250,31 +250,31 @@ digraph "Diagram" {
       }
     }
   }
-  "WildRydesBackendStack/lambda" -> "WildRydesBackendStack/Table" [
+  "WildRydesBackendStack/WildRydesRequestUnicorn" -> "WildRydesBackendStack/WildRydesRidesTable" [
     dir = "both",
   ];
-  "WildRydesBackendStack/WildRydes-api" -> "WildRydesBackendStack/lambda" [
+  "WildRydesBackendStack/WildRydesApi" -> "WildRydesBackendStack/WildRydesRequestUnicorn" [
     dir = "both",
   ];
-  "WildRydesBackendStack/WildRydes-api" -> "WildRydesBackendStack/auth" [
+  "WildRydesBackendStack/WildRydesApi" -> "WildRydesBackendStack/WildRydesApiAuth" [
     dir = "both",
   ];
-  "WildRydesBackendStack/auth" -> "WildRydesBackendStack/WildRydes-api" [
+  "WildRydesBackendStack/WildRydesApiAuth" -> "WildRydesBackendStack/WildRydesApi" [
     dir = "both",
   ];
-  "WildRydesStaticWebsiteStack/logs" -> "WildRydesStaticWebsiteStack/website" [
+  "WildRydesStaticWebsiteStack/logs.wildrydes-turki-hajmohamad" -> "WildRydesStaticWebsiteStack/wildrydes-turki-hajmohamad" [
     dir = "both",
   ];
-  "WildRydesStaticWebsiteStack/website" -> "WildRydesStaticWebsiteStack/logs" [
+  "WildRydesStaticWebsiteStack/wildrydes-turki-hajmohamad" -> "WildRydesStaticWebsiteStack/logs.wildrydes-turki-hajmohamad" [
     dir = "both",
   ];
-  "WildRydesStaticWebsiteStack/website" -> "WildRydesStaticWebsiteStack/lambda-config-updates" [
+  "WildRydesStaticWebsiteStack/wildrydes-turki-hajmohamad" -> "WildRydesStaticWebsiteStack/WildRydesUpdateJsConfig" [
     dir = "both",
   ];
-  "WildRydesStaticWebsiteStack/Custom__CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C" -> "WildRydesStaticWebsiteStack/website" [
+  "WildRydesStaticWebsiteStack/Custom__CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C" -> "WildRydesStaticWebsiteStack/wildrydes-turki-hajmohamad" [
     dir = "both",
   ];
-  "WildRydesStaticWebsiteStack/Custom__CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C" -> "WildRydesStaticWebsiteStack/DeployWebsite/AwsCliLayer" [
+  "WildRydesStaticWebsiteStack/Custom__CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C" -> "WildRydesStaticWebsiteStack/WildRydesDeployWebsite/AwsCliLayer" [
     dir = "both",
   ];
 }
