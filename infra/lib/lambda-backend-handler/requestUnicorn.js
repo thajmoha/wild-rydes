@@ -49,8 +49,9 @@ exports.handler = (event, context, callback) => {
   const pickupLocation = requestBody.PickupLocation;
 
   const unicorn = findUnicorn(pickupLocation);
+  const ridesTableName = os.environ.get("ridesTableName");
 
-  recordRide(rideId, username, unicorn)
+  recordRide(rideId, username, unicorn, ridesTableName)
     .then(() => {
       // You can use the callback function to provide a return value from your Node.js
       // Lambda functions. The first parameter is used for failed invocations. The
@@ -95,10 +96,10 @@ function findUnicorn(pickupLocation) {
   return fleet[Math.floor(Math.random() * fleet.length)];
 }
 
-function recordRide(rideId, username, unicorn) {
+function recordRide(rideId, username, unicorn, ridesTableName) {
   return ddb
     .put({
-      TableName: "Rides",
+      TableName: ridesTableName,
       Item: {
         RideId: rideId,
         User: username,

@@ -37,6 +37,9 @@ export class BackendStack extends cdk.Stack {
           path.join(__dirname, "lambda-backend-handler")
         ),
         handler: "requestUnicorn.handler",
+        environment: {
+          ridesTableName: dynamoDbTable.tableName,
+        },
       }
     );
 
