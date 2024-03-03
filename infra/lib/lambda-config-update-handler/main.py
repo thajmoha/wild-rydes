@@ -10,14 +10,14 @@ def lambda_handler(event, context):
     print("==========STARTING===========")
     user_pool_id = os.environ.get("userPoolId")
     user_pool_client_id = os.environ.get("userPoolClientId")
-    y = os.environ.get("invokeUrl")
+    invokeUrl = os.environ.get("invokeUrl")
     print(f"passed userpoolid [{user_pool_id},{user_pool_client_id}]")
 
     vlauseToModify = {
         "userPoolId": user_pool_id,
         "userPoolClientId": user_pool_client_id,
         "region": event['Records'][0]["awsRegion"],
-        "invokeUrl": y}
+        "invokeUrl": invokeUrl}
 
     # Get bucket name and object key from the event
     bucket_name = event['Records'][0]['s3']['bucket']['name']
