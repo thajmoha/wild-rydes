@@ -16,7 +16,7 @@ export class StaticWebsiteStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: StaticWebsiteProps) {
     super(scope, id, props);
 
-    const logsBucket = new s3.Bucket(this, "logs", {
+    const logsBucket = new s3.Bucket(this, `logs.${props.rootDomainName}`, {
       bucketName: `logs.${props.rootDomainName}`,
       autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -25,7 +25,7 @@ export class StaticWebsiteStack extends cdk.Stack {
     // define bucket metrics
     const websiteBucketMetrics: s3.BucketMetrics[] = [{ id: "UsageFilter" }];
 
-    const websiteBucket = new s3.Bucket(this, "website", {
+    const websiteBucket = new s3.Bucket(this, props.rootDomainName, {
       bucketName: props.rootDomainName,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       metrics: websiteBucketMetrics,
@@ -49,30 +49,32 @@ export class StaticWebsiteStack extends cdk.Stack {
       })
     );
 
-    new s3deploy.BucketDeployment(this, "DeployWebsite", {
+    new s3deploy.BucketDeployment(this, `${props.appName}DeployWebsite`, {
       sources: [s3deploy.Source.asset("../Wild_Rydes")],
       destinationBucket: websiteBucket,
     });
-    console.log("----------------------");
     const userPoolId = cdk.Fn.importValue("UserPoolId");
     const userPoolClientId = cdk.Fn.importValue("UserPoolClientId");
     const apiInvokeUrl = cdk.Fn.importValue("prodApiUrl");
-    console.log("----------------------");
 
-    const myLambda = new lambda.Function(this, "lambda-config-updates", {
-      functionName: "WildRydesConfigUpdatedFunction",
-      runtime: lambda.Runtime.PYTHON_3_10,
-      code: lambda.Code.fromAsset(
-        path.join(__dirname, "lambda-config-update-handler")
-      ),
-      handler: "main.lambda_handler",
-      environment: {
-        appName: props.appName,
-        userPoolId: userPoolId,
-        userPoolClientId: userPoolClientId,
-        invokeUrl: apiInvokeUrl,
-      },
-    });
+    const myLambda = new lambda.Function(
+      this,
+      `${props.appName}UpdateJsConfig`,
+      {
+        functionName: `${props.appName}UpdateJsConfig`,
+        runtime: lambda.Runtime.PYTHON_3_10,
+        code: lambda.Code.fromAsset(
+          path.join(__dirname, "lambda-config-update-handler")
+        ),
+        handler: "main.lambda_handler",
+        environment: {
+          appName: props.appName,
+          userPoolId: userPoolId,
+          userPoolClientId: userPoolClientId,
+          invokeUrl: apiInvokeUrl,
+        },
+      }
+    );
 
     // Custom IAM policy
     const s3Policy = new iam.PolicyStatement({
