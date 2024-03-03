@@ -6,6 +6,7 @@ import { StaticWebsiteStack } from "../lib/static-website-stack";
 import { UserManagementStack } from "../lib/user-management-stack";
 import { BackendStack } from "../lib/backend-stack";
 
+// load env variables from infra/.env file
 dotenv.config();
 
 const awsAccount = process.env.AWS_ACCOUNT as string;
@@ -36,8 +37,7 @@ if (!appName) {
 const app = new cdk.App();
 
 // user management stack
-
-const userManegementStakc = new UserManagementStack(
+const userManagementStack = new UserManagementStack(
   app,
   `${appName}UserManagementStack`,
   {
@@ -51,9 +51,10 @@ const backendStack = new BackendStack(app, `${appName}BackendStack`, {
   env,
   appName,
 });
-backendStack.addDependency(userManegementStakc);
+backendStack.addDependency(userManagementStack);
+
 // static website
-const staticwebsiteStack = new StaticWebsiteStack(
+const staticWebsiteStack = new StaticWebsiteStack(
   app,
   `${appName}StaticWebsiteStack`,
   {
@@ -62,4 +63,4 @@ const staticwebsiteStack = new StaticWebsiteStack(
     appName,
   }
 );
-staticwebsiteStack.addDependency(backendStack);
+staticWebsiteStack.addDependency(backendStack);
