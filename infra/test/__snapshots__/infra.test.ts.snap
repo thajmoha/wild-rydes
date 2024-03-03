@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`stack created 1`] = `
+exports[`stack templated should match snapshot 1`] = `
 {
   "Parameters": {
     "BootstrapVersion": {
@@ -10,6 +10,169 @@ exports[`stack created 1`] = `
     },
   },
   "Resources": {
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691": {
+      "DependsOn": [
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+      ],
+      "Properties": {
+        "Code": {
+          "ZipFile": "import boto3  # type: ignore
+import json
+import logging
+import urllib.request
+
+s3 = boto3.client("s3")
+
+EVENTBRIDGE_CONFIGURATION = 'EventBridgeConfiguration'
+CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
+
+def handler(event: dict, context):
+  response_status = "SUCCESS"
+  error_message = ""
+  try:
+    props = event["ResourceProperties"]
+    notification_configuration = props["NotificationConfiguration"]
+    managed = props.get('Managed', 'true').lower() == 'true'
+    stack_id = event['StackId']
+    old = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
+    if managed:
+      config = handle_managed(event["RequestType"], notification_configuration)
+    else:
+      config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
+    s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config)
+  except Exception as e:
+    logging.exception("Failed to put bucket notification configuration")
+    response_status = "FAILED"
+    error_message = f"Error: {str(e)}. "
+  finally:
+    submit_response(event, context, response_status, error_message)
+
+def handle_managed(request_type, notification_configuration):
+  if request_type == 'Delete':
+    return {}
+  return notification_configuration
+
+def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
+  def with_id(n):
+    n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
+    return n
+
+  external_notifications = {}
+  existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
+  for t in CONFIGURATION_TYPES:
+    if request_type == 'Update':
+        ids = [with_id(n) for n in old.get(t, [])]
+        old_incoming_ids = [n['Id'] for n in ids]
+        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]
+    elif request_type == 'Create':
+        external_notifications[t] = [n for n in existing_notifications.get(t, [])]
+  if EVENTBRIDGE_CONFIGURATION in existing_notifications:
+    external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
+
+  if request_type == 'Delete':
+    return external_notifications
+
+  notifications = {}
+  for t in CONFIGURATION_TYPES:
+    external = external_notifications.get(t, [])
+    incoming = [with_id(n) for n in notification_configuration.get(t, [])]
+    notifications[t] = external + incoming
+
+  if EVENTBRIDGE_CONFIGURATION in notification_configuration:
+    notifications[EVENTBRIDGE_CONFIGURATION] = notification_configuration[EVENTBRIDGE_CONFIGURATION]
+  elif EVENTBRIDGE_CONFIGURATION in external_notifications:
+    notifications[EVENTBRIDGE_CONFIGURATION] = external_notifications[EVENTBRIDGE_CONFIGURATION]
+
+  return notifications
+
+def submit_response(event: dict, context, response_status: str, error_message: str):
+  response_body = json.dumps(
+    {
+      "Status": response_status,
+      "Reason": f"{error_message}See the details in CloudWatch Log Stream: {context.log_stream_name}",
+      "PhysicalResourceId": event.get("PhysicalResourceId") or event["LogicalResourceId"],
+      "StackId": event["StackId"],
+      "RequestId": event["RequestId"],
+      "LogicalResourceId": event["LogicalResourceId"],
+      "NoEcho": False,
+    }
+  ).encode("utf-8")
+  headers = {"content-type": "", "content-length": str(len(response_body))}
+  try:
+    req = urllib.request.Request(url=event["ResponseURL"], headers=headers, data=response_body, method="PUT")
+    with urllib.request.urlopen(req) as response:
+      print(response.read().decode("utf-8"))
+    print("Status code: " + response.reason)
+  except Exception as e:
+      print("send(..) failed executing request.urlopen(..): " + str(e))
+",
+        },
+        "Description": "AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)",
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.9",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "Roles": [
+          {
+            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
       "DependsOn": [
         "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
@@ -28,7 +191,7 @@ exports[`stack created 1`] = `
         "Handler": "index.handler",
         "Layers": [
           {
-            "Ref": "DeployWebsiteAwsCliLayer17DBC421",
+            "Ref": "testDeployWebsiteAwsCliLayer0EEAE244",
           },
         ],
         "Role": {
@@ -128,7 +291,7 @@ exports[`stack created 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "website333B7473",
+                    "example8246F34D",
                     "Arn",
                   ],
                 },
@@ -138,7 +301,7 @@ exports[`stack created 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "website333B7473",
+                          "example8246F34D",
                           "Arn",
                         ],
                       },
@@ -175,7 +338,7 @@ exports[`stack created 1`] = `
             [
               "Lambda function for auto-deleting objects in ",
               {
-                "Ref": "logs0B6081B1",
+                "Ref": "logsexample8510FAAF",
               },
               " S3 bucket.",
             ],
@@ -216,141 +379,20 @@ exports[`stack created 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeployWebsiteAwsCliLayer17DBC421": {
-      "Properties": {
-        "Content": {
-          "S3Bucket": "cdk-hnb659fds-assets-test-account-us-east-1",
-          "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip",
-        },
-        "Description": "/opt/awscli/aws",
-      },
-      "Type": "AWS::Lambda::LayerVersion",
-    },
-    "DeployWebsiteCustomResourceD116527B": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "DestinationBucketName": {
-          "Ref": "website333B7473",
-        },
-        "Prune": true,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
-            "Arn",
-          ],
-        },
-        "SourceBucketNames": [
-          "cdk-hnb659fds-assets-test-account-us-east-1",
-        ],
-        "SourceObjectKeys": [
-          "c277ca827943ac0f48ee6e57140a208e6e22d6d93e57ba383b0740023612330f.zip",
-        ],
-      },
-      "Type": "Custom::CDKBucketDeployment",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "logs0B6081B1": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AccessControl": "LogDeliveryWrite",
-        "BucketName": "logs.example",
-        "OwnershipControls": {
-          "Rules": [
-            {
-              "ObjectOwnership": "ObjectWriter",
-            },
-          ],
-        },
-        "Tags": [
-          {
-            "Key": "aws-cdk:auto-delete-objects",
-            "Value": "true",
-          },
-        ],
-      },
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "logsAutoDeleteObjectsCustomResourceA82AC6E1": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "logsPolicy42E8B048",
-      ],
-      "Properties": {
-        "BucketName": {
-          "Ref": "logs0B6081B1",
-        },
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::S3AutoDeleteObjects",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "logsPolicy42E8B048": {
-      "Properties": {
-        "Bucket": {
-          "Ref": "logs0B6081B1",
-        },
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "s3:PutBucketPolicy",
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn",
-                  ],
-                },
-              },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "logs0B6081B1",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "logs0B6081B1",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::S3::BucketPolicy",
-    },
-    "website333B7473": {
+    "example8246F34D": {
       "DeletionPolicy": "Delete",
       "Properties": {
         "BucketName": "example",
         "LoggingConfiguration": {
           "DestinationBucketName": {
-            "Ref": "logs0B6081B1",
+            "Ref": "logsexample8510FAAF",
           },
         },
+        "MetricsConfigurations": [
+          {
+            "Id": "UsageFilter",
+          },
+        ],
         "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": false,
           "BlockPublicPolicy": false,
@@ -363,7 +405,7 @@ exports[`stack created 1`] = `
             "Value": "true",
           },
           {
-            "Key": "aws-cdk:cr-owned:0bbd7f95",
+            "Key": "aws-cdk:cr-owned:6aafbcd1",
             "Value": "true",
           },
         ],
@@ -375,14 +417,34 @@ exports[`stack created 1`] = `
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
     },
-    "websiteAutoDeleteObjectsCustomResource15116AC6": {
+    "exampleAllowBucketNotificationsTotestStaticWebsiteStacktestUpdateJsConfigCB8443AD10DA3278": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "testUpdateJsConfig99D6E318",
+            "Arn",
+          ],
+        },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": "test-account",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "example8246F34D",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "exampleAutoDeleteObjectsCustomResource49B14C03": {
       "DeletionPolicy": "Delete",
       "DependsOn": [
-        "websitePolicy3ACEADD2",
+        "examplePolicyC28A1D15",
       ],
       "Properties": {
         "BucketName": {
-          "Ref": "website333B7473",
+          "Ref": "example8246F34D",
         },
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -394,10 +456,53 @@ exports[`stack created 1`] = `
       "Type": "Custom::S3AutoDeleteObjects",
       "UpdateReplacePolicy": "Delete",
     },
-    "websitePolicy3ACEADD2": {
+    "exampleNotifications8743234D": {
+      "DependsOn": [
+        "exampleAllowBucketNotificationsTotestStaticWebsiteStacktestUpdateJsConfigCB8443AD10DA3278",
+      ],
+      "Properties": {
+        "BucketName": {
+          "Ref": "example8246F34D",
+        },
+        "Managed": true,
+        "NotificationConfiguration": {
+          "LambdaFunctionConfigurations": [
+            {
+              "Events": [
+                "s3:ObjectCreated:*",
+              ],
+              "Filter": {
+                "Key": {
+                  "FilterRules": [
+                    {
+                      "Name": "prefix",
+                      "Value": "js/config_template.js",
+                    },
+                  ],
+                },
+              },
+              "LambdaFunctionArn": {
+                "Fn::GetAtt": [
+                  "testUpdateJsConfig99D6E318",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+        },
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3BucketNotifications",
+    },
+    "examplePolicyC28A1D15": {
       "Properties": {
         "Bucket": {
-          "Ref": "website333B7473",
+          "Ref": "example8246F34D",
         },
         "PolicyDocument": {
           "Statement": [
@@ -420,7 +525,7 @@ exports[`stack created 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "website333B7473",
+                    "example8246F34D",
                     "Arn",
                   ],
                 },
@@ -430,7 +535,7 @@ exports[`stack created 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "website333B7473",
+                          "example8246F34D",
                           "Arn",
                         ],
                       },
@@ -452,7 +557,7 @@ exports[`stack created 1`] = `
                   [
                     {
                       "Fn::GetAtt": [
-                        "website333B7473",
+                        "example8246F34D",
                         "Arn",
                       ],
                     },
@@ -466,6 +571,231 @@ exports[`stack created 1`] = `
         },
       },
       "Type": "AWS::S3::BucketPolicy",
+    },
+    "logsexample8510FAAF": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "BucketName": "logs.example",
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "ObjectWriter",
+            },
+          ],
+        },
+        "Tags": [
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true",
+          },
+        ],
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "logsexampleAutoDeleteObjectsCustomResource5C9596CE": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "logsexamplePolicyA9DA59D8",
+      ],
+      "Properties": {
+        "BucketName": {
+          "Ref": "logsexample8510FAAF",
+        },
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3AutoDeleteObjects",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "logsexamplePolicyA9DA59D8": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "logsexample8510FAAF",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:PutBucketPolicy",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn",
+                  ],
+                },
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "logsexample8510FAAF",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "logsexample8510FAAF",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "testDeployWebsiteAwsCliLayer0EEAE244": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-test-account-us-east-1",
+          "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "testDeployWebsiteCustomResource09726BAD": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "example8246F34D",
+        },
+        "Prune": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-test-account-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "34daa29660e7f429c503a5ad6026bb46a2fc589a1ac8b015eaadd7ce49d6928f.zip",
+        ],
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testUpdateJsConfig99D6E318": {
+      "DependsOn": [
+        "testUpdateJsConfigServiceRoleDefaultPolicyA4955D3E",
+        "testUpdateJsConfigServiceRole891E7014",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-test-account-us-east-1",
+          "S3Key": "8b0d2c76870c7dc5c8141cdca86529d5686b84e78ce41a5e5c862346f8135afe.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "appName": "test",
+            "invokeUrl": {
+              "Fn::ImportValue": "prodApiUrl",
+            },
+            "userPoolClientId": {
+              "Fn::ImportValue": "UserPoolClientId",
+            },
+            "userPoolId": {
+              "Fn::ImportValue": "UserPoolId",
+            },
+          },
+        },
+        "FunctionName": "testUpdateJsConfig",
+        "Handler": "main.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "testUpdateJsConfigServiceRole891E7014",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.10",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "testUpdateJsConfigServiceRole891E7014": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "testUpdateJsConfigServiceRoleDefaultPolicyA4955D3E": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "cognito-idp:ListUserPools",
+                "cognito-idp:ListUserPoolClients",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "testUpdateJsConfigServiceRoleDefaultPolicyA4955D3E",
+        "Roles": [
+          {
+            "Ref": "testUpdateJsConfigServiceRole891E7014",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
   },
   "Rules": {
