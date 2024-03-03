@@ -51,6 +51,7 @@ export class StaticWebsiteStack extends cdk.Stack {
 
     new s3deploy.BucketDeployment(this, `${props.appName}DeployWebsite`, {
       sources: [s3deploy.Source.asset("../Wild_Rydes")],
+      exclude: ["**/.DS_store"],
       destinationBucket: websiteBucket,
     });
     const userPoolId = cdk.Fn.importValue("UserPoolId");
