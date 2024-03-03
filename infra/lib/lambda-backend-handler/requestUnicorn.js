@@ -49,7 +49,7 @@ exports.handler = (event, context, callback) => {
   const pickupLocation = requestBody.PickupLocation;
 
   const unicorn = findUnicorn(pickupLocation);
-  const ridesTableName = os.environ.get("ridesTableName");
+  const ridesTableName = process.env.ridesTableName;
 
   recordRide(rideId, username, unicorn, ridesTableName)
     .then(() => {
